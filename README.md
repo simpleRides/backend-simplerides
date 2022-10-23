@@ -37,3 +37,4 @@ Tous les tests devront être écrit dans le dossier __TESTS__ sous la forme `<no
 Un exemple de test se trouve dans le fichier `__TESTS__/index.test.js`
 
 La commande pour lancer les tests est `yarn test`
+Si vous voulez lancer des tests pour que jest regarde pendant que vous codez `yarn jest --watch`
