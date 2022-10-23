@@ -12,8 +12,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "prettier --write .",
-      "pre-push": "npx jest"
+      "pre-push": "prettier --write . && npx jest"
     }
   },
   "dependencies": {
