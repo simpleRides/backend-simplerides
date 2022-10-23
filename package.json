@@ -6,19 +6,25 @@
     "start": "nodemon ./bin/www",
     "test": "yarn jest"
   },
+  "husky":{
+    "hooks": {
+      "pre-commit": "prettier --write ."
+    }
+  },
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
     "dotenv": "^16.0.1",
     "express": "~4.16.1",
-    "husky": "^8.0.1",
     "morgan": "~1.9.1",
     "nodemon": "^2.0.20"
   },
   "devDependencies": {
+    "husky": "^8.0.1",
     "jest": "^28.1.1",
     "node-fetch": "2",
+    "prettier": "^2.7.1",
     "supertest": "^6.2.3"
   }
 }
