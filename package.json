@@ -4,9 +4,13 @@
   "private": true,
   "scripts": {
     "start": "nodemon ./bin/www",
-    "test": "yarn jest"
+    "test": "yarn jest",
+    "prepare": "husky install"
   },
-  "husky":{
+  "lint-staged": {
+    "**/*.{js, json}": "prettier --write --ignore-unknown"
+  },
+  "husky": {
     "hooks": {
       "pre-commit": "prettier --write ."
     }
@@ -23,6 +27,7 @@
   "devDependencies": {
     "husky": "^8.0.1",
     "jest": "^28.1.1",
+    "lint-staged": "^13.0.3",
     "node-fetch": "2",
     "prettier": "^2.7.1",
     "supertest": "^6.2.3"
