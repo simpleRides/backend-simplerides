@@ -5,6 +5,7 @@
   "scripts": {
     "start": "nodemon ./bin/www",
     "test": "yarn jest",
+    "lint": "prettier --write .",
     "prepare": "husky install"
   },
   "lint-staged": {
