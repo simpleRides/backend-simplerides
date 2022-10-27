@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
-const indexController = require('../controllers/index.controller');
 
+require('../models/connection');
+const indexController = require('../controllers/index.controller');
 
 router.get('/ping', indexController.getWelcomeMsg);
 
