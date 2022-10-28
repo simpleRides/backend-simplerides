@@ -8,6 +8,8 @@ const logger = require('morgan');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const providersRouter = require('./routes/providers');
+const bksrtoolsRouter = require('./routes/bksrtools');
 
 const app = express();
 const cors = require('cors');
@@ -21,5 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/providers', providersRouter);
+app.use('/bksrtools', bksrtoolsRouter);
 
 module.exports = app;

@@ -52,85 +52,6 @@ const postSignIn = (req, res) => {
   });
 };
 
-const postFindOneById = (req, res) => {
-  if (!checkBody(req.body, ['id'])) {
-    res.json({ result: false, error: 'Missing or empty fields' });
-    return;
-  }
-
-  User.findOne({ _id: req.body.id }).then((data) => {
-    if (data) {
-      console.log(data);
-      res.json({ result: true, username: data.username, token: data.token });
-    } else {
-      res.json({ result: false, error: 'User not found or wrong id' });
-    }
-  });
-};
-
-const postFindOneByToken = (req, res) => {
-  if (!checkBody(req.body, ['token'])) {
-    res.json({ result: false, error: 'Missing or empty fields' });
-    return;
-  }
-
-  User.findOne({ token: req.body.token }).then((data) => {
-    if (data) {
-      console.log(data);
-      res.json({ result: true, username: data.username, token: data.token });
-    } else {
-      res.json({ result: false, error: 'User not found or wrong token' });
-    }
-  });
-};
-
-const deleteOneById = (req, res) => {
-  if (!checkBody(req.body, ['id'])) {
-    res.json({ result: false, error: 'Missing or empty fields' });
-    return;
-  }
-  User.deleteOne({ _id: req.body.id }).then((data) => {
-    if (data.deletedCount > 0) {
-      res.json({
-        result: true,
-        message: `${data.deletedCount} users deleted from database.`,
-      });
-    } else {
-      res.json({ result: false, error: 'Nothing to delete' });
-    }
-  });
-};
-
-const deleteOneByToken = (req, res) => {
-  if (!checkBody(req.body, ['token'])) {
-    res.json({ result: false, error: 'Missing or empty fields' });
-    return;
-  }
-  User.deleteOne({ token: req.body.token }).then((data) => {
-    if (data.deletedCount > 0) {
-      res.json({
-        result: true,
-        message: `${data.deletedCount} users deleted from database.`,
-      });
-    } else {
-      res.json({ result: false, error: 'Nothing to delete' });
-    }
-  });
-};
-
-const deleteAll = (req, res) => {
-  User.deleteMany().then((data) => {
-    if (data.deletedCount > 0) {
-      res.json({
-        result: true,
-        message: `${data.deletedCount} users deleted from database.`,
-      });
-    } else {
-      res.json({ result: false, error: 'Nothing to delete' });
-    }
-  });
-};
-
 const postAddProvider = (req, res) => {
   if (!checkBody(req.body, ['token', 'name'])) {
     res.json({ result: false, error: 'Missing or empty fields' });
@@ -154,54 +75,64 @@ const postAddProvider = (req, res) => {
         providers: dataAfter.providers,
       });
     } else {
-      res.json({ result: false, error: 'Provider not updated' });
+      res.json({ result: false, error: 'Provider not added' });
     }
   });
-
-  /*
-  User.postFindOneByToken({ token: req.body.token }).then(dataBefore => {
-    if (dataBefore) {
-      console.log(data);
-      User.findOneAndUpdate(
-        { token: req.body.token },
-        { $addToSet : { providers: { providername: req.body.name, isConnected: true } }},
-        { returnDocument: 'after' },
-      ).then(dataAfter => {
-        if (dataAfter) {
-          res.json({ result: true, username: dataAfter.username, token: dataAfter.token, providers: dataAfter.providers });
-        } else {
-          res.json({ result: false, error: 'Provider not updated' });
-        }
-      });
-      res.json({ result: true, username: dataBefore.username, token: dataBefore.token });
-    } else {
-      res.json({ result: false, error: 'User not found or wrong id' });
-    }
-  });
-  */
 };
 
-const addSettingsDirectly = (req, res) => {
-  // if (!checkBody(req.body, ["providers", "customergrade", "pickupDistance", "ridePrice", "rideDistance", "ridemarkup"])) {
-  if (!checkBody(req.body, ['customergradecheck', 'customergradevalue'])) {
+const postCheckProvider = (req, res) => {
+  if (!checkBody(req.body, ['token', 'name', 'check'])) {
     res.json({ result: false, error: 'Missing or empty fields' });
     return;
   }
 
-  const newSettingsSet = new SettingsSet({
-    providers: [],
-    customerGrade: {
-      isChecked: req.body.customergradecheck,
-      value: req.body.customergradevalue,
+  User.findOneAndUpdate(
+    { token: req.body.token, 'providers.providername': req.body.name },
+    {
+      $set: {
+        'providers.$.isConnected': req.body.check,
+      },
     },
-    pickupDistance: {},
-    ridePrice: {},
-    rideDistance: {},
-    rideMarkup: {},
+    { returnDocument: 'after' }
+  ).then((dataAfter) => {
+    if (dataAfter) {
+      res.json({
+        result: true,
+        username: dataAfter.username,
+        token: dataAfter.token,
+        providers: dataAfter.providers,
+      });
+    } else {
+      res.json({ result: false, error: 'Provider not updated' });
+    }
   });
+};
 
-  newSettingsSet.save().then((newDoc) => {
-    res.json({ result: true, settingsSet: newDoc });
+const postRemoveProvider = (req, res) => {
+  if (!checkBody(req.body, ['token', 'name'])) {
+    res.json({ result: false, error: 'Missing or empty fields' });
+    return;
+  }
+
+  User.findOneAndUpdate(
+    { token: req.body.token },
+    {
+      $pull: {
+        providers: { providername: req.body.name },
+      },
+    },
+    { returnDocument: 'after' }
+  ).then((dataAfter) => {
+    if (dataAfter) {
+      res.json({
+        result: true,
+        username: dataAfter.username,
+        token: dataAfter.token,
+        providers: dataAfter.providers,
+      });
+    } else {
+      res.json({ result: false, error: 'Provider not removed' });
+    }
   });
 };
 
@@ -256,12 +187,8 @@ module.exports = {
   getWelcomeMsg2,
   postSignUp,
   postSignIn,
-  postFindOneById,
-  postFindOneByToken,
-  deleteOneById,
-  deleteOneByToken,
-  deleteAll,
   postAddProvider,
-  addSettingsDirectly,
+  postCheckProvider,
+  postRemoveProvider,
   postAddSettings,
 };
