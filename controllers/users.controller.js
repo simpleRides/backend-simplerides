@@ -47,9 +47,7 @@ const postSignIn = (req, res) => {
     if (data && bcrypt.compareSync(req.body.password, data.password)) {
       res.json({ result: true, username: data.username, token: data.token });
     } else {
-      res
-        .status(404)
-        .json({ result: false, error: 'User not found or wrong password' });
+      res.json({ result: false, error: 'User not found or wrong password' });
     }
   });
 };
