@@ -1,9 +1,9 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
 require('../models/connection');
 const providersController = require('../controllers/providers.controller');
 
-router.get('/ping', providersController.getWelcomeMsg3);
+router.get('/', providersController.getProviders);
 
 module.exports = router;
