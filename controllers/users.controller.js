@@ -1,8 +1,12 @@
+const fetch = require('node-fetch');
+
 const { checkBody } = require('../modules/checkBody');
 const User = require('../models/users');
 const uid2 = require('uid2');
 const bcrypt = require('bcrypt');
 const SettingsSet = require('../models/settingsSets');
+
+const PROVIDERS_URL = 'https://backend-providers-wine.vercel.app/users';
 
 const getWelcomeMsg2 = (req, res) => {
   res.json({ result: 'Welcome to simpleRide API' });
@@ -148,33 +152,54 @@ const postConnectProvider = (req, res) => {
     return;
   }
 
-  // Le hash, ci-dessous, fait par le backend SR, est à remplacer par le retour de l'appel au backen Provider
-  const hashProvider = bcrypt.hashSync(req.body.pwdProvider, 10);
+  // Le hash, ci-dessous, fait par le backend SR, est à remplacer par le retour de l'appel au backend Provider
+  // const hashProvider = bcrypt.hashSync(req.body.pwdProvider, 10);
 
-  User.findOneAndUpdate(
-    { token: req.body.token },
-    {
-      $addToSet: {
-        providers: {
-          providername: req.body.nameProvider,
-          providerToken: hashProvider,
-          isConnected: true,
-        },
-      },
-    },
-    { returnDocument: 'after' }
-  ).then((dataAfter) => {
-    if (dataAfter) {
-      res.json({
-        result: true,
-        username: dataAfter.username,
-        token: dataAfter.token,
-        providers: dataAfter.providers,
-      });
-    } else {
-      res.json({ result: false, error: 'Provider not added' });
-    }
-  });
+  fetch(`${PROVIDERS_URL}/signin`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      username: req.body.idProvider,
+      password: req.body.pwdProvider,
+    }),
+  })
+    .then((response) => response.json())
+    .then((dataProvider) => {
+      if (dataProvider.result) {
+        console.log('tokenProvider', dataProvider.token);
+
+        User.findOneAndUpdate(
+          { token: req.body.token },
+          {
+            $addToSet: {
+              providers: {
+                providername: req.body.nameProvider,
+                providerToken: dataProvider.token,
+                isConnected: true,
+              },
+            },
+          },
+          { returnDocument: 'after' }
+        ).then((dataAfter) => {
+          if (dataAfter) {
+            res.json({
+              result: true,
+              username: dataAfter.username,
+              token: dataAfter.token,
+              providers: dataAfter.providers,
+            });
+          } else {
+            res.json({ result: false, error: 'Provider not added' });
+          }
+        });
+      } else {
+        setIsError(true);
+        console.log('webservice provider : cant login');
+      }
+    })
+    .catch((error) => console.log('webservice provider, Err:', error));
+
+  console.log('test3');
 };
 
 const putAddSettings = (req, res) => {
