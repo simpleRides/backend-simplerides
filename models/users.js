@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const providerSchema = mongoose.Schema({
   providername: String,
+  providerToken: String,
   isConnected: Boolean,
 });
 
