@@ -11,6 +11,7 @@ router.post('/signin', usersController.postSignIn);
 router.post('/addprovider', usersController.postAddProvider);
 router.post('/checkprovider', usersController.postCheckProvider);
 router.post('/removeprovider', usersController.postRemoveProvider);
+router.post('/connectprovider', usersController.postConnectProvider);
 router.post('/addsettings', usersController.postAddSettings);
 
 module.exports = router;
