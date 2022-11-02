@@ -62,7 +62,11 @@ const postAddProvider = (req, res) => {
     { token: req.body.token },
     {
       $addToSet: {
-        providers: { providername: req.body.name, isConnected: true },
+        providers: {
+          providername: req.body.name,
+          providerToken: '',
+          isConnected: true,
+        },
       },
     },
     { returnDocument: 'after' }
@@ -136,6 +140,43 @@ const postRemoveProvider = (req, res) => {
   });
 };
 
+const postConnectProvider = (req, res) => {
+  if (
+    !checkBody(req.body, ['token', 'nameProvider', 'idProvider', 'pwdProvider'])
+  ) {
+    res.json({ result: false, error: 'Missing or empty fields' });
+    return;
+  }
+
+  // Le hash, ci-dessous, fait par le backend SR, est à remplacer par le retour de l'appel au backen Provider
+  const hashProvider = bcrypt.hashSync(req.body.pwdProvider, 10);
+
+  User.findOneAndUpdate(
+    { token: req.body.token },
+    {
+      $addToSet: {
+        providers: {
+          providername: req.body.nameProvider,
+          providerToken: hashProvider,
+          isConnected: true,
+        },
+      },
+    },
+    { returnDocument: 'after' }
+  ).then((dataAfter) => {
+    if (dataAfter) {
+      res.json({
+        result: true,
+        username: dataAfter.username,
+        token: dataAfter.token,
+        providers: dataAfter.providers,
+      });
+    } else {
+      res.json({ result: false, error: 'Provider not added' });
+    }
+  });
+};
+
 const putAddSettings = (req, res) => {
   // if (!checkBody(req.body, ["providers", "customergrade", "pickupDistance", "ridePrice", "rideDistance", "ridemarkup"])) {
   if (!checkBody(req.body, ['token'])) {
@@ -198,5 +239,6 @@ module.exports = {
   postAddProvider,
   postCheckProvider,
   postRemoveProvider,
+  postConnectProvider,
   putAddSettings,
 };
