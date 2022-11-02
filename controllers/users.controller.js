@@ -205,9 +205,9 @@ const putAddSettings = (req, res) => {
             token: req.body.token,
             clientNoteMin: req.body.clientNoteMin,
             pickupDistanceMax: req.body.pickupDistanceMax,
-            ridePriceMin: req.body.ridePriceMin,
-            rideDistanceMax: req.body.rideDistanceMax,
-            rideMarkupMin: req.body.rideMarkupMin,
+            priceMin: req.body.priceMin,
+            distanceMax: req.body.distanceMax,
+            markupMin: req.body.markupMin,
           });
 
           newSettingsSet.save().then((newDoc) => {
@@ -232,6 +232,17 @@ const putAddSettings = (req, res) => {
   });
 };
 
+const postUsersInfos = (req, res) => {
+  if (!checkBody(req.body, ['token'])) {
+    res.json({ result: false, error: 'Missing or empty fields' });
+    return;
+  }
+
+  User.findOne({ token: req.body.token })
+    .populate('settingsSet')
+    .then((data) => res.json({ result: true, data: data.settingsSet }));
+};
+
 module.exports = {
   getWelcomeMsg2,
   postSignUp,
@@ -241,4 +252,5 @@ module.exports = {
   postRemoveProvider,
   postConnectProvider,
   putAddSettings,
+  postUsersInfos,
 };
