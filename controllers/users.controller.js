@@ -177,49 +177,57 @@ const postConnectProvider = (req, res) => {
   });
 };
 
-const postAddSettings = (req, res) => {
+const putAddSettings = (req, res) => {
   // if (!checkBody(req.body, ["providers", "customergrade", "pickupDistance", "ridePrice", "rideDistance", "ridemarkup"])) {
-  if (
-    !checkBody(req.body, ['token', 'customergradecheck', 'customergradevalue'])
-  ) {
+  if (!checkBody(req.body, ['token'])) {
     res.json({ result: false, error: 'Missing or empty fields' });
     return;
   }
 
   User.findOne({ token: req.body.token }).then((dataBefore) => {
     if (dataBefore) {
-      console.log(dataBefore);
+      SettingsSet.findOne({ token: req.body.token }).then((response) => {
+        if (response) {
+          SettingsSet.updateOne(
+            { token: response.token },
+            {
+              clientNoteMin: req.body.clientNoteMin,
+              pickupDistanceMax: req.body.pickupDistanceMax,
+              ridePriceMin: req.body.ridePriceMin,
+              rideDistanceMax: req.body.rideDistanceMax,
+              rideMarkupMin: req.body.rideMarkupMin,
+            }
+          ).then(() =>
+            res.json({ result: true, message: 'User settings updated' })
+          );
+        } else {
+          const newSettingsSet = new SettingsSet({
+            token: req.body.token,
+            clientNoteMin: req.body.clientNoteMin,
+            pickupDistanceMax: req.body.pickupDistanceMax,
+            ridePriceMin: req.body.ridePriceMin,
+            rideDistanceMax: req.body.rideDistanceMax,
+            rideMarkupMin: req.body.rideMarkupMin,
+          });
 
-      const newSettingsSet = new SettingsSet({
-        providers: [],
-        customerGrade: {
-          isChecked: req.body.customergradecheck,
-          value: req.body.customergradevalue,
-        },
-        pickupDistance: {},
-        ridePrice: {},
-        rideDistance: {},
-        rideMarkup: {},
-      });
-
-      newSettingsSet.save().then((newDoc) => {
-        User.findOneAndUpdate(
-          { token: req.body.token },
-          { settingsSet: newDoc._id }
-        ).then((dataAfter) => {
-          if (dataAfter) {
-            res.json({
-              result: true,
-              username: dataAfter.username,
-              token: dataAfter.token,
+          newSettingsSet.save().then((newDoc) => {
+            User.findOneAndUpdate(
+              { token: req.body.token },
+              { settingsSet: newDoc._id }
+            ).then((dataAfter) => {
+              if (dataAfter) {
+                res.json({
+                  result: true,
+                  username: dataAfter.username,
+                  token: dataAfter.token,
+                });
+              } else {
+                res.json({ result: false, error: 'Settings and user updated' });
+              }
             });
-          } else {
-            res.json({ result: false, error: 'Settings and user updated' });
-          }
-        });
+          });
+        }
       });
-    } else {
-      res.json({ result: false, error: 'User not found or wrong token' });
     }
   });
 };
@@ -232,5 +240,5 @@ module.exports = {
   postCheckProvider,
   postRemoveProvider,
   postConnectProvider,
-  postAddSettings,
+  putAddSettings,
 };
