@@ -13,5 +13,6 @@ router.post('/checkprovider', usersController.postCheckProvider);
 router.post('/removeprovider', usersController.postRemoveProvider);
 router.post('/connectprovider', usersController.postConnectProvider);
 router.put('/addsettings', usersController.putAddSettings);
+router.post('/', usersController.postUsersInfos);
 
 module.exports = router;
