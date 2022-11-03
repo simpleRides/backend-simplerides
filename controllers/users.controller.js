@@ -186,8 +186,10 @@ const postConnectProvider = (req, res) => {
               result: true,
               username: dataAfter.username,
               token: dataAfter.token,
-              providers: dataAfter.providers,
+              // providers: dataAfter.providers,
+              tokenProvider: dataProvider.token,
             });
+            console.log(dataAfter);
           } else {
             res.json({ result: false, error: 'Provider not added' });
           }
