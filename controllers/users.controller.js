@@ -6,7 +6,6 @@ const uid2 = require('uid2');
 const bcrypt = require('bcrypt');
 const SettingsSet = require('../models/settingsSets');
 
-// const PROVIDERS_URL = 'https://backend-providers-wine.vercel.app/users';
 const PROVIDERS_URL = 'https://providers-sooty.vercel.app/users';
 
 const getWelcomeMsg2 = (req, res) => {
@@ -221,9 +220,9 @@ const putAddSettings = (req, res) => {
             {
               clientNoteMin: req.body.clientNoteMin,
               pickupDistanceMax: req.body.pickupDistanceMax,
-              ridePriceMin: req.body.ridePriceMin,
-              rideDistanceMax: req.body.rideDistanceMax,
-              rideMarkupMin: req.body.rideMarkupMin,
+              priceMin: req.body.priceMin,
+              distanceMax: req.body.distanceMax,
+              markupMin: req.body.markupMin,
             }
           ).then(() =>
             res.json({ result: true, message: 'User settings updated' })
