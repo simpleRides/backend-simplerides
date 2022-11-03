@@ -49,7 +49,12 @@ const postSignIn = (req, res) => {
 
   User.findOne({ email: req.body.email }).then((data) => {
     if (data && bcrypt.compareSync(req.body.password, data.password)) {
-      res.json({ result: true, username: data.username, token: data.token });
+      res.json({
+        result: true,
+        username: data.username,
+        token: data.token,
+        providers: data.providers,
+      });
     } else {
       res.json({ result: false, error: 'User not found or wrong password' });
     }
