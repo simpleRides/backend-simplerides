@@ -1,9 +1,8 @@
 const fetch = require('node-fetch');
-// const { checkBody } = require('../modules/checkBody');
 
-const UBER_URL = 'https://backend-providers-wine.vercel.app/uber/settings';
-const HEETCH_URL = 'https://backend-providers-wine.vercel.app/heetch/settings';
-const BOLT_URL = 'https://backend-providers-wine.vercel.app/bolt/settings';
+const UBER_URL = 'https://providers-sooty.vercel.app/uber/settings';
+const HEETCH_URL = 'https://providers-sooty.vercel.app/heetch/settings';
+const BOLT_URL = 'https://providers-sooty.vercel.app/bolt/settings';
 
 const getProviders = async (req, res) => {
   const settings = {
@@ -22,18 +21,47 @@ const getProviders = async (req, res) => {
     body: JSON.stringify(settings),
   };
 
-  const uber = await fetch(UBER_URL, postHeader);
-  const uberRides = await uber.json();
+  try {
+    const uber = await fetch(UBER_URL, postHeader);
+    const heetch = await fetch(HEETCH_URL, postHeader);
+    const bolt = await fetch(BOLT_URL, postHeader);
 
-  const heetch = await fetch(HEETCH_URL, postHeader);
-  const heetchRides = await heetch.json();
+    const uberRides = addProviderName((await uber.json()).data, 'uber');
+    const heetchRides = addProviderName((await heetch.json()).data, 'heetch');
+    const boltRides = addProviderName((await bolt.json()).data, 'bolt');
 
-  const bolt = await fetch(HEETCH_URL, postHeader);
-  const boltRides = await bolt.json();
+    const allRides = [
+      ...filterRides(uberRides),
+      ...filterRides(heetchRides),
+      ...filterRides(boltRides),
+    ];
 
-  const all = [...uberRides.data, ...heetchRides.data, ...boltRides.data];
+    res.json({ result: true, data: allRides });
+  } catch (error) {
+    res.json({ result: false, message: 'Error while fetching url' });
+  }
+};
 
-  res.json({ result: 'providers merged', data: all });
+// ajout du provider name à l'obet du provider
+const addProviderName = (providerRides, provider) => {
+  return providerRides.map((e) => ({ ...e, providerName: provider }));
+};
+
+// Filtrer les courses et renvoyer une seule course
+const filterRides = (providerRides) => {
+  return providerRides
+    .filter((a) => a.status === 'Pending')
+    .filter((a) => Date.parse(a.date) > new Date())
+    .sort((a, b) => {
+      if (a.date > b.date) {
+        return 1;
+      }
+      if (a.date < b.date) {
+        return -1;
+      }
+      return 0;
+    })
+    .slice(0, 1);
 };
 
 module.exports = {
