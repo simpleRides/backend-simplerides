@@ -6,7 +6,8 @@ const uid2 = require('uid2');
 const bcrypt = require('bcrypt');
 const SettingsSet = require('../models/settingsSets');
 
-const PROVIDERS_URL = 'https://backend-providers-wine.vercel.app/users';
+// const PROVIDERS_URL = 'https://backend-providers-wine.vercel.app/users';
+const PROVIDERS_URL = 'https://providers-sooty.vercel.app/users';
 
 const getWelcomeMsg2 = (req, res) => {
   res.json({ result: 'Welcome to simpleRide API' });
@@ -186,8 +187,10 @@ const postConnectProvider = (req, res) => {
               result: true,
               username: dataAfter.username,
               token: dataAfter.token,
-              providers: dataAfter.providers,
+              // providers: dataAfter.providers,
+              tokenProvider: dataProvider.token,
             });
+            console.log(dataAfter);
           } else {
             res.json({ result: false, error: 'Provider not added' });
           }
