@@ -6,11 +6,11 @@ const BOLT_URL = 'https://providers-sooty.vercel.app/bolt/settings';
 
 const getProviders = async (req, res) => {
   const settings = {
-    clientNoteMin: 4,
-    priceMin: 30,
-    markupMin: 1.5,
-    distanceMax: 3000,
-    travelTimeMax: 15,
+    clientNoteMin: req.body.clientNoteMin,
+    priceMin: req.body.priceMin,
+    markupMin: req.body.markupMin,
+    distanceMax: req.body.distanceMax,
+    travelTimeMax: req.body.travelTimeMax,
   };
 
   const postHeader = {
