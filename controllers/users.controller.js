@@ -67,6 +67,7 @@ const postAddProvider = (req, res) => {
     return;
   }
 
+  // $addtoSet ajoute au document trouvé, returnDocument renvoie le document en réponse
   User.findOneAndUpdate(
     { token: req.body.token },
     {
@@ -99,6 +100,7 @@ const postCheckProvider = (req, res) => {
     return;
   }
 
+  // .$ permet de naviguer dans l'objet providers
   User.findOneAndUpdate(
     { token: req.body.token, 'providers.providername': req.body.name },
     {
@@ -159,7 +161,6 @@ const postConnectProvider = (req, res) => {
 
   // Le hash, ci-dessous, fait par le backend SR, est à remplacer par le retour de l'appel au backend Provider
   // const hashProvider = bcrypt.hashSync(req.body.pwdProvider, 10);
-
   fetch(`${PROVIDERS_URL}/signin`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -199,18 +200,21 @@ const postConnectProvider = (req, res) => {
             res.json({ result: false, error: 'Provider not added' });
           }
         });
-      } else {
-        setIsError(true);
-        console.log('webservice provider : cant login');
       }
     })
     .catch((error) => console.log('webservice provider, Err:', error));
-
-  console.log('test3');
 };
 
+// requête put pour actualiser la BDD
 const putAddSettings = (req, res) => {
-  // if (!checkBody(req.body, ["providers", "customergrade", "pickupDistance", "ridePrice", "rideDistance", "ridemarkup"])) {
+  const settings = {
+    clientNoteMin: req.body.clientNoteMin,
+    pickupDistanceMax: req.body.pickupDistanceMax,
+    priceMin: req.body.priceMin,
+    distanceMax: req.body.distanceMax,
+    markupMin: req.body.markupMin,
+  };
+
   if (!checkBody(req.body, ['token'])) {
     res.json({ result: false, error: 'Missing or empty fields' });
     return;
@@ -220,27 +224,11 @@ const putAddSettings = (req, res) => {
     if (dataBefore) {
       SettingsSet.findOne({ token: req.body.token }).then((response) => {
         if (response) {
-          SettingsSet.updateOne(
-            { token: response.token },
-            {
-              clientNoteMin: req.body.clientNoteMin,
-              pickupDistanceMax: req.body.pickupDistanceMax,
-              priceMin: req.body.priceMin,
-              distanceMax: req.body.distanceMax,
-              markupMin: req.body.markupMin,
-            }
-          ).then(() =>
+          SettingsSet.updateOne({ token: response.token }, settings).then(() =>
             res.json({ result: true, message: 'User settings updated' })
           );
         } else {
-          const newSettingsSet = new SettingsSet({
-            token: req.body.token,
-            clientNoteMin: req.body.clientNoteMin,
-            pickupDistanceMax: req.body.pickupDistanceMax,
-            priceMin: req.body.priceMin,
-            distanceMax: req.body.distanceMax,
-            markupMin: req.body.markupMin,
-          });
+          const newSettingsSet = new SettingsSet(settings);
 
           newSettingsSet.save().then((newDoc) => {
             User.findOneAndUpdate(
@@ -264,6 +252,7 @@ const putAddSettings = (req, res) => {
   });
 };
 
+// populate de la clé étrangère settingsSet chez User
 const postUsersInfos = (req, res) => {
   if (!checkBody(req.body, ['token'])) {
     res.json({ result: false, error: 'Missing or empty fields' });
