@@ -8,10 +8,6 @@ const SettingsSet = require('../models/settingsSets');
 
 const PROVIDERS_URL = 'https://providers-sooty.vercel.app/users';
 
-const getWelcomeMsg2 = (req, res) => {
-  res.json({ result: 'Welcome to simpleRide API' });
-};
-
 const postSignUp = (req, res) => {
   if (!checkBody(req.body, ['email', 'password', 'username', 'phone'])) {
     res.json({ result: false, error: 'Missing or empty fields' });
