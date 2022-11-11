@@ -261,7 +261,6 @@ const postUsersInfos = (req, res) => {
 };
 
 module.exports = {
-  getWelcomeMsg2,
   postSignUp,
   postSignIn,
   postAddProvider,
