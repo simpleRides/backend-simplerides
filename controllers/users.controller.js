@@ -248,6 +248,7 @@ const putAddSettings = (req, res) => {
   });
 };
 
+// Récupère les settings dans la bdd pour un user
 // populate de la clé étrangère settingsSet chez User
 const postUsersInfos = (req, res) => {
   if (!checkBody(req.body, ['token'])) {
