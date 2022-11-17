@@ -1,9 +1,9 @@
 const fetch = require('node-fetch');
 
-//  appel des webservices (uber, heetch et bolt) en fonction des filtres (/settings)
-const UBER_URL = 'https://providers-sooty.vercel.app/uber/settings';
-const HEETCH_URL = 'https://providers-sooty.vercel.app/heetch/settings';
-const BOLT_URL = 'https://providers-sooty.vercel.app/bolt/settings';
+// appel des webservices (uber, heetch et bolt) en fonction des filtres (/settings)
+const UBER_URL = 'https://backend-providers-pi.vercel.app/uber/settings';
+const HEETCH_URL = 'https://backend-providers-pi.vercel.app/heetch/settings';
+const BOLT_URL = 'https://backend-providers-pi.vercel.app/bolt/settings';
 
 const getProviders = async (req, res) => {
   // on a utilisé un post au lieu d'un get pour cacher les informations dans le body (body pas disponible en GET) et pour simplifier l'écriture des requêtes

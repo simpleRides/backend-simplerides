@@ -6,7 +6,7 @@ const uid2 = require('uid2');
 const bcrypt = require('bcrypt');
 const SettingsSet = require('../models/settingsSets');
 
-const PROVIDERS_URL = 'https://providers-sooty.vercel.app/users';
+const PROVIDERS_URL = 'https://backend-providers-pi.vercel.app/users';
 
 const postSignUp = (req, res) => {
   if (!checkBody(req.body, ['email', 'password', 'username', 'phone'])) {
